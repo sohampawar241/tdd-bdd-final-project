@@ -104,13 +104,44 @@ def step_impl(context, element_name):
 # to get the element id of any button
 ##################################################################
 
-## UPDATE CODE HERE ##
+@when('I press the "{button}" button')
+def step_impl(context, button):
+    button_id = button.lower() + '-btn'
+    element = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.element_to_be_clickable((By.ID, button_id))
+    )
+    element.click()
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'flash_message'),
+            message
+        )
+    )
+    assert(found)
+
+@then('I should see "{name}" in the results')
+def step_impl(context, name):
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'search_results'),
+            name
+        )
+    )
+    assert(found)
+
+@then('I should not see "{name}" in the results')
+def step_impl(context, name):
+    element = context.driver.find_element(By.ID, 'search_results')
+    assert(name not in element.text)
 
 ##################################################################
 # This code works because of the following naming convention:
 # The id field for text input in the html is the element name
-# prefixed by ID_PREFIX so the Name field has an id='pet_name'
-# We can then lowercase the name and prefix with pet_ to get the id
+# prefixed by ID_PREFIX so the Name field has an id='product_name'
+# We can then lowercase the name and prefix with product_ to get the id
 ##################################################################
 
 @then('I should see "{text_string}" in the "{element_name}" field')
